@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💳 Заработай за 10 минут | mcflly</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Russo+One&family=Exo+2:wght@300;400;600;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+
+<body>
+  <!-- NOISE OVERLAY -->
+  <div class="noise-overlay"></div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container"></div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="forum-breadcrumb">
+        <span>Форум</span>
+        <span class="sep">/</span>
+        <span>Работа и услуги</span>
+        <span class="sep">/</span>
+        <span class="active">💳 Рефералки на карты</span>
+      </div>
+      <div class="user-badge">
+        <div class="user-avatar"><img class="user-avatar" src="img/photo_2026-03-22_21-42-40.jpg" alt=""></div>
+        <div class="user-info">
+          <span class="username">Mcflly</span>
+          <span class="online-dot"></span>
+        </div>
+        <div class="deposit-badge" onclick="window.open('https://lolz.live/threads/9774328/')">Депозит++ <span
+            class="dep-amount">10 000 ₽</span></div>
+      </div>
+      <button class="burger" id="burger" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== TICKER ===== -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="ticker-track">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero-wrap" id="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero">
+      <div class="hero-content">
+        <div class="tag-line">
+          <span class="tag green">🟢 Онлайн</span>
+          <span class="tag gray" onclick="window.open('https://lolz.live/threads/9774328/')">Гарант: 10 000 ₽</span>
+          <span class="tag gray">СБП выплаты</span>
+          <span class="tag gray"><a href="https://lolz.live/threads/9774328/">Тема на форуме</a></span>
+
+        </div>
+        <h1 class="hero-title">
+          Заработай<br />
+          <span class="accent">деньги</span><br />
+          за <span class="highlight">10 минут</span>
+        </h1>
+        <p class="hero-sub">Оформи карту по рефкe → сделай покупку → получи деньги на СБП<br />Всё комиссии беру на
+          себя. Полное сопровождение</p>
+        <div class="hero-cta">
+          <a href="https://t.me/mmcflly" target="_blank" class="btn-main">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.04 9.613c-.152.678-.554.843-1.123.524l-3.1-2.284-1.496 1.44c-.165.165-.305.305-.626.305l.223-3.164 5.752-5.195c.25-.222-.054-.346-.387-.124L7.15 14.48l-3.044-.951c-.662-.207-.674-.662.138-.98l11.897-4.588c.55-.2 1.032.133.421 1.287z" />
+            </svg>
+            Написать в Telegram
+          </a>
+          <a href="#offers" class="btn-ghost">Смотреть офферы ↓</a>
+
+        </div>
+      </div>
+      <!-- 3D Canvas -->
+      <div class="hero-3d" id="hero-3d">
+        <canvas id="card-canvas"></canvas>
+      </div>
+    </div><!-- /hero grid -->
+  </section><!-- /hero-wrap -->
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="how-it-works reveal" id="how">
+    <div class="container">
+      <h2 class="section-title"><span class="prefix">//</span> Как это работает</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-icon">📲</div>
+          <h3>Пишешь мне</h3>
+          <p>Говоришь какой оффер хочешь. Я даю реферальную ссылку и объясняю всё пошагово.</p>
+        </div>
+        <div class="step-connector">→</div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-icon">💳</div>
+          <h3>Оформляешь карту</h3>
+          <p>Регистрируешься по рефке, выполняешь простое условие. Я помогаю на каждом этапе.</p>
+        </div>
+        <div class="step-connector">→</div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-icon">💸</div>
+          <h3>Получаешь деньги</h3>
+          <p>Деньги приходят на СБП в течение нескольких минут. Никаких задержек.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="trust-section reveal" id="trust">
+    <div class="container">
+      <h2 class="section-title"><span class="prefix">//</span> Гарантии и доверие</h2>
+      <div class="trust-grid">
+        <div class="trust-card" onclick="window.open('https://lolz.live/threads/9774328/')">
+          <div class="trust-icon">🛡️</div>
+          <h3>Депозит 10 000 ₽</h3>
+          <p>Страховой депозит на форуме. Гарантия вашего спокойствия.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon">⚡</div>
+          <h3>Моментальные выплаты</h3>
+          <p>Деньги на СБП в течение нескольких минут после выполнения условий.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon">🤝</div>
+          <h3>Полное сопровождение</h3>
+          <p>Помогаю с открытием и закрытием. На связи на всех этапах.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon">💰</div>
+          <h3>Все комиссии мои</h3>
+          <p>Вы не платите никаких комиссий. Все расходы беру на себя.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ===== OFFERS ===== -->
+  <section class="offers-section reveal" id="offers">
+    <div class="container">
+      <h2 class="section-title"><span class="prefix">//</span> Список офферов</h2>
+      <p class="section-sub">Фильтруй по возрасту и типу карты</p>
+
+      <div class="offers-filters">
+        <button class="filter-btn active" data-filter="all">Все</button>
+        <button class="filter-btn" data-filter="14">14+</button>
+        <button class="filter-btn" data-filter="18">18+</button>
+        <button class="filter-btn" data-filter="20">20+</button>
+        <button class="filter-btn" data-filter="debit">Дебетовые</button>
+        <button class="filter-btn" data-filter="credit">Кредитные</button>
+      </div>
+
+      <div class="offers-grid" id="offers-grid">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== IP/NPD SECTION ===== -->
+  <section class="ip-section reveal" id="ip">
+    <div class="container">
+      <h2 class="section-title"><span class="prefix">//</span> ИП / НПД — до 4500 ₽</h2>
+      <p class="section-sub">Открой расчётный счёт для ИП или НПД и получи больше</p>
+      <div class="ip-grid">
+        <div class="ip-card">
+          <div class="bank-name">🟡 Озон Банк</div>
+          <div class="ip-amount">1 000 ₽</div>
+          <div class="ip-tag">18+</div>
+        </div>
+        <div class="ip-card">
+          <div class="bank-name">🔴 Альфа Банк</div>
+          <div class="ip-amount">2 000 ₽</div>
+          <div class="ip-tag">18+ / Новое ИП</div>
+        </div>
+        <div class="ip-card">
+          <div class="bank-name">🔴 Альфа Банк</div>
+          <div class="ip-amount">1 000 ₽</div>
+          <div class="ip-tag">18+ / Есть ИП</div>
+        </div>
+      </div>
+      <div class="ip-info">
+        <p>✅ Полное сопровождение на всех этапах</p>
+        <p>✅ Без страховых взносов</p>
+        <p>✅ Только госпошлина ~200 ₽</p>
+      </div>
+      <div class="warning-block">
+        <span class="warn-icon">⚠️</span>
+        <div>
+          <strong>Важно:</strong> Если вы получаете пенсию любого вида — при открытии ИП вы её потеряете. Учитывайте это
+          при принятии решения.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ===== CALCULATOR ===== -->
+  <section class="calc-section reveal" id="calc">
+    <div class="container">
+      <h2 class="section-title"><span class="prefix">//</span> Калькулятор заработка</h2>
+      <p class="section-sub">Выбери офферы которые хочешь выполнить — считай свой заработок</p>
+      <div class="calc-inner">
+        <div class="calc-list" id="calc-list">
+          <!-- filled by JS -->
+        </div>
+        <div class="calc-result-panel">
+          <div class="calc-result-label">Твой потенциальный заработок:</div>
+          <div class="calc-result-amount" id="calc-total">0 ₽</div>
+          <div class="calc-result-sub" id="calc-count">Выбрано: 0 офферов</div>
+          <a href="https://t.me/mmcflly" target="_blank" class="btn-main calc-cta">Хочу столько заработать 💸</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== REFERRAL ===== -->
+  <section class="referral-section reveal" id="referral">
+    <div class="container">
+      <h2 class="section-title"><span class="prefix">//</span> Приводи кентов</h2>
+      <div class="ref-card">
+        <div class="ref-amount">до 500 ₽</div>
+        <p class="ref-desc">За каждого приведённого друга который оформит карту по твоей рекомендации</p>
+        <a href="https://t.me/mmcflly" target="_blank" class="btn-main">Узнать подробнее</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <div class="footer-logo">💳 Mcflly</div>
+        <p class="footer-sub">Скоро появятся офферы на доставку. Оставайтесь на связи!</p>
+      </div>
+      <div class="footer-right">
+        <a href="https://t.me/mmcflly" target="_blank" class="btn-main small">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.04 9.613c-.152.678-.554.843-1.123.524l-3.1-2.284-1.496 1.44c-.165.165-.305.305-.626.305l.223-3.164 5.752-5.195c-.054-.222-.054-.346-.387-.124L7.15 14.48l-3.044-.951c-.662-.207-.674-.662.138-.98l11.897-4.588c.55-.2 1.032.133.421 1.287z" />
+          </svg>
+          Telegram
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Mcflly. Список офферов будет расти 🚀</span>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script src="js/data.js"></script>
+  <script src="js/ticker.js"></script>
+  <script src="js/offers.js"></script>
+  <script src="js/calculator.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/three-scene.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
