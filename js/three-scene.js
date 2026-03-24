@@ -8,139 +8,129 @@ function initThreeCard() {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setSize(W, H);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true; // Включаем тени для модели
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, W / H, 0.1, 100);
   camera.position.set(0, 0, 6.5);
 
-  // ============================================================
-  // ROOT GROUP — everything parented here so it all moves as one
-  // ============================================================
+  // ROOT GROUP — всё будет дочерним элементом для единого движения
   const cardGroup = new THREE.Group();
   scene.add(cardGroup);
 
-  // ===== CREATE CREDIT CARD =====
-  function createCreditCard() {
-    // Card dimensions
-    const width = 3.0;
-    const height = 1.89;
-    const depth = 0.055;
-
-    // Create gradient texture
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 320;
-    const ctx = canvas.getContext('2d');
-
-    // Gradient background
-    const cardMat = new THREE.MeshStandardMaterial({
-      color: 0x0b0b18,
-      metalness: 0.65,
-      roughness: 0.22,
-    });
-
-    ctx.fillStyle = cardMat;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Add subtle pattern
-    ctx.globalAlpha = 0.1;
-    for (let i = 0; i < 50; i++) {
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(
-        Math.random() * canvas.width,
-        Math.random() * canvas.height,
-        Math.random() * 3,
-        0,
-        Math.PI * 2
-      );
-      ctx.fill();
-    }
-
-    // Card chip
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#FFD700';
-    ctx.fillRect(50, 100, 80, 60);
-    ctx.strokeStyle = '#FFA500';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(50, 100, 80, 60);
-
-    ctx.font = 'bold 24px monospace';
-    ctx.fillStyle = '#22c55e';
-    ctx.fillText('7777 7777 7777 7777', 50, 200);
-
-    ctx.font = '18px Arial';
-    ctx.fillStyle = '#22c55e';
-    ctx.fillText('MCFLLY BANK', 50, 250);
-
-    ctx.font = 'bold 20px monospace';
-    ctx.fillStyle = '#22c55e';
-    ctx.fillText('12/26', 350, 250);
-
-    // Create texture from canvas
-    const texture = new THREE.CanvasTexture(canvas);
-
-    // Card geometry
-    const cardGeometry = new THREE.BoxGeometry(width, height, depth);
-
-    // Card materials
-    const materials = [
-      new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.3, roughness: 0.4 }), // Right
-      new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.3, roughness: 0.4 }), // Left
-      new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.3, roughness: 0.4 }), // Top
-      new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.3, roughness: 0.4 }), // Bottom
-      new THREE.MeshStandardMaterial({ map: texture, metalness: 0.3, roughness: 0.4 }), // Front
-      new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.5, roughness: 0.5 })  // Back
-    ];
-
-    const card = new THREE.Mesh(cardGeometry, materials);
-    card.castShadow = true;
-    card.receiveShadow = true;
-
-    return card;
+  // ===== ОПРЕДЕЛЕНИЕ ТИПА УСТРОЙСТВА =====
+  function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      || window.innerWidth <= 768; // Также проверяем ширину экрана
   }
 
-  const card = createCreditCard();
-  cardGroup.add(card);
+  const isMobile = isMobileDevice();
+  const modelScale = isMobile ? 1.5 : 3; // Масштаб модели: телефон - 2, ПК - 3
+  console.log(`Устройство: ${isMobile ? 'Мобильное' : 'ПК'}, масштаб модели: ${modelScale}`);
 
+  // ===== ЗАГРУЗКА ВНЕШНЕЙ МОДЕЛИ =====
+  let externalModel = null;
 
-  // ===== CONTACTLESS SYMBOL — child of cardGroup =====
-  const nfcGroup = new THREE.Group();
-  nfcGroup.position.set(1.05, 0.26, 0.032);
-  cardGroup.add(nfcGroup);
+  // Инициализируем загрузчик GLTF (самый популярный формат)
+  // Убедитесь, что вы подключили GLTFLoader в HTML:
+  // <script type="importmap">
+  //   {
+  //     "imports": {
+  //       "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+  //       "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+  //     }
+  //   }
+  // </script>
 
-  const nfcMat = new THREE.MeshStandardMaterial({
-    color: 0x22c55e,
-    metalness: 0.2,
-    roughness: 0.5,
-    emissive: 0x22c55e,
-    emissiveIntensity: 0.35,
-  });
-  for (let i = 0; i < 3; i++) {
-    const arc = new THREE.Mesh(
-      new THREE.TorusGeometry(0.065 + i * 0.072, 0.013, 8, 28, Math.PI * 0.72),
-      nfcMat
+  import('three/addons/loaders/GLTFLoader.js').then(({ GLTFLoader }) => {
+    const loader = new GLTFLoader();
+
+    // Замените URL на путь к вашей модели
+    const modelUrl = 'img/card.glb'; // или .gltf
+
+    loader.load(
+      modelUrl,
+      (gltf) => {
+        externalModel = gltf.scene;
+
+        // Настройка модели
+        externalModel.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+
+            // Если нужно применить дополнительные текстуры
+            if (child.material) {
+              // Настройка материалов, если необходимо
+              child.material.roughness = 0.7;
+              child.material.metalness = 0.5;
+            }
+          }
+        });
+
+        // Масштабирование модели под размер сцены с учетом типа устройства
+        const box = new THREE.Box3().setFromObject(externalModel);
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+
+        // Используем переменную modelScale для масштабирования
+        const baseScale = modelScale / maxDim;
+        externalModel.scale.set(baseScale, baseScale, baseScale);
+
+        // Центрируем модель
+        const center = box.getCenter(new THREE.Vector3());
+        externalModel.position.sub(center);
+
+        // Дополнительная корректировка позиции для мобильных устройств
+        if (isMobile) {
+          // Можно немного сместить модель для лучшего отображения на мобильных
+          externalModel.position.y += 0.1;
+        }
+
+        cardGroup.add(externalModel);
+
+        // Добавляем небольшой лог для отладки
+        console.log(`Модель загружена и отмасштабирована с коэффициентом ${baseScale.toFixed(3)}`);
+      },
+      (xhr) => {
+        // Прогресс загрузки
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      },
+      (error) => {
+        console.error('Ошибка загрузки модели:', error);
+        // Фолбэк: создаем простую карту, если модель не загрузилась
+        createFallbackCard();
+      }
     );
-    arc.rotation.z = Math.PI * 0.64;
-    nfcGroup.add(arc);
+  }).catch((err) => {
+    console.error('GLTFLoader не доступен:', err);
+    createFallbackCard();
+  });
+
+  // Фолбэк на случай ошибки загрузки
+  function createFallbackCard() {
+    const geometry = new THREE.BoxGeometry(3.0, 1.89, 0.055);
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x22c55e,
+      metalness: 0.5,
+      roughness: 0.3
+    });
+    const fallbackCard = new THREE.Mesh(geometry, material);
+    fallbackCard.castShadow = true;
+    fallbackCard.receiveShadow = true;
+    cardGroup.add(fallbackCard);
+
+    // Также масштабируем фолбэк-карту в зависимости от устройства
+    const fallbackScale = isMobile ? 0.8 : 1;
+    fallbackCard.scale.set(fallbackScale, fallbackScale, fallbackScale);
   }
 
-
-
-
-  // ===== MAGNETIC STRIPE (back) — child of cardGroup =====
-  const stripe = new THREE.Mesh(
-    new THREE.BoxGeometry(2.94, 0.34, 0.01),
-    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.0, roughness: 0.9 })
-  );
-  stripe.position.set(0, 0.46, -0.0335);
-  cardGroup.add(stripe);
-
-  // ===== LIGHTS =====
+  // ===== СВЕТ =====
   scene.add(new THREE.AmbientLight(0x10101e, 1.4));
 
   const mainLight = new THREE.DirectionalLight(0xffffff, 2.8);
   mainLight.position.set(4, 5, 6);
+  mainLight.castShadow = true;
   scene.add(mainLight);
 
   const greenLight = new THREE.PointLight(0x22c55e, 4, 10);
@@ -155,8 +145,16 @@ function initThreeCard() {
   fillLight.position.set(-4, -2, -3);
   scene.add(fillLight);
 
-  // ===== PARTICLES =====
-  const pCount = 90;
+  // Дополнительный свет для мобильных устройств для лучшей видимости
+  if (isMobile) {
+    const mobileFillLight = new THREE.PointLight(0x22c55e, 1.5, 8);
+    mobileFillLight.position.set(0, 1, 2);
+    scene.add(mobileFillLight);
+  }
+
+  // ===== ЧАСТИЦЫ =====
+  // На мобильных устройствах уменьшаем количество частиц для производительности
+  const pCount = isMobile ? 45 : 90;
   const pPos = new Float32Array(pCount * 3);
   for (let i = 0; i < pCount; i++) {
     pPos[i * 3] = (Math.random() - 0.5) * 9;
@@ -167,19 +165,34 @@ function initThreeCard() {
   pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
   const particles = new THREE.Points(
     pGeo,
-    new THREE.PointsMaterial({ color: 0x22c55e, size: 0.02, transparent: true, opacity: 0.35 })
+    new THREE.PointsMaterial({ color: 0x22c55e, size: isMobile ? 0.015 : 0.02, transparent: true, opacity: 0.35 })
   );
   scene.add(particles);
 
-  // ===== MOUSE TRACKING =====
+  // ===== ОТСЛЕЖИВАНИЕ МЫШИ =====
   let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
-  window.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    mouseY = -((e.clientY - rect.top) / rect.height - 0.5) * 2;
-  });
 
-  // ===== RESIZE =====
+  // На мобильных устройствах отключаем или уменьшаем эффект отслеживания мыши
+  if (!isMobile) {
+    window.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      mouseY = -((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    });
+  } else {
+    // Для мобильных используем гироскоп если доступен
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', (e) => {
+        if (e.beta && e.gamma) {
+          // Используем наклон устройства для управления
+          mouseX = Math.max(-1, Math.min(1, e.gamma / 45)); // gamma: -90 до 90
+          mouseY = Math.max(-1, Math.min(1, e.beta / 45));  // beta: -90 до 90
+        }
+      });
+    }
+  }
+
+  // ===== АДАПТАЦИЯ К РАЗМЕРУ =====
   function onResize() {
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
@@ -187,10 +200,22 @@ function initThreeCard() {
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h, false);
+
+    // При изменении размера экрана проверяем, не изменился ли тип устройства
+    const newIsMobile = window.innerWidth <= 768;
+    if (newIsMobile !== isMobile && externalModel) {
+      // Если тип устройства изменился, пересчитываем масштаб
+      const newScale = newIsMobile ? 2 : 3;
+      const box = new THREE.Box3().setFromObject(externalModel);
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const baseScale = newScale / maxDim;
+      externalModel.scale.set(baseScale, baseScale, baseScale);
+    }
   }
   window.addEventListener('resize', onResize);
 
-  // ===== ANIMATE =====
+  // ===== АНИМАЦИЯ =====
   let t = 0;
   function animate() {
     requestAnimationFrame(animate);
@@ -199,9 +224,13 @@ function initThreeCard() {
     targetX += (mouseX - targetX) * 0.045;
     targetY += (mouseY - targetY) * 0.045;
 
-    cardGroup.rotation.y = targetX * 0.42 + Math.sin(t * 0.38) * 0.07;
-    cardGroup.rotation.x = targetY * 0.28 + Math.cos(t * 0.28) * 0.04;
-    cardGroup.position.y = Math.sin(t * 0.5) * 0.13;
+    // На мобильных устройствах уменьшаем амплитуду движения
+    const rotationAmplitude = isMobile ? 0.5 : 1;
+    const positionAmplitude = isMobile ? 0.7 : 1;
+
+    cardGroup.rotation.y = (targetX * 0.42 + Math.sin(t * 0.38) * 0.07) * rotationAmplitude;
+    cardGroup.rotation.x = (targetY * 0.28 + Math.cos(t * 0.28) * 0.04) * rotationAmplitude;
+    cardGroup.position.y = Math.sin(t * 0.5) * 0.13 * positionAmplitude;
 
     greenLight.position.x = Math.sin(t * 0.65) * 3;
     greenLight.position.y = Math.cos(t * 0.48) * 1.8;

@@ -675,20 +675,16 @@ section {
 .warning-block {
   display: flex;
   gap: 12px;
+
   align-items: flex-start;
   background: rgba(239, 68, 68, 0.07);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: var(--radius-lg);
   padding: 16px 20px;
-  font-size: 13px;
+  font-size: 16px;
   color: #fca5a5;
   line-height: 1.6;
-}
-
-.warn-icon {
-  font-size: 20px;
-  flex-shrink: 0;
-  margin-top: 1px;
+  justify-content: center;
 }
 
 /* ===== REFERRAL ===== */
